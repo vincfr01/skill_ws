@@ -11,29 +11,35 @@ class TaskOrchestrator(Node):
     def __init__(self):
         super().__init__('task_orchestrator')
 
+        # Service Eingang
         self.task_srv = self.create_service(
             StartSkill,
             'start_skill',
             self.start_task_cb
         )
 
+        # Ontologie Client
         self.onto_client = self.create_client(
             CanExecuteTask,
             'can_execute_task'
         )
 
+        # Atomic Skill Clients
         self.move_client = ActionClient(self, ExecuteAtomicSkill, 'move')
         self.grip_client = ActionClient(self, ExecuteAtomicSkill, 'grip')
         self.release_client = ActionClient(self, ExecuteAtomicSkill, 'release')
 
-        self.get_logger().info("Task Orchestrator ready.")
+        self.get_logger().info("Task Orchestrator started.")
+
+    # =========================================================
+    # SERVICE CALLBACK
+    # =========================================================
 
     def start_task_cb(self, request, response):
 
-        task = request.task_type.lower().replace("_", "")
-
         self.get_logger().info(
-            f"Incoming Task: robot={request.robot_id}, type={request.task_type}"
+            f"Incoming Task: robot={request.robot_id}, "
+            f"type={request.task_type}"
         )
 
         if not self.onto_client.wait_for_service(timeout_sec=2.0):
@@ -49,91 +55,92 @@ class TaskOrchestrator(Node):
 
         def ontology_done(fut):
             result = fut.result()
-
             if result is None or not result.can_execute:
                 self.get_logger().warn("Ontology rejected task.")
                 return
 
             self.get_logger().info("Ontology approved task.")
-            self._dispatch(task, request)
+
+            task = request.task_type.lower()
+
+            if task == "move":
+                self._run_sequence([
+                    ("move", request.target_frame)
+                ])
+
+            elif task == "grip":
+                self._run_sequence([
+                    ("grip", request.object_id)
+                ])
+
+            elif task == "release":
+                self._run_sequence([
+                    ("release", request.object_id)
+                ])
+
+            elif task == "pick":
+                self._run_sequence([
+                    ("release", request.object_id),
+                    ("move", "Down1"),
+                    ("grip", request.object_id),
+                    ("move", "Up1"),
+                ])
+
+            elif task == "place":
+                self._run_sequence([
+                    ("move", "Down1"),
+                    ("release", request.object_id),
+                    ("move", "Up1"),
+                ])
+
+            elif task in ["pick_and_place", "pickandplace"]:
+                self._run_sequence([
+                    ("move", request.pick_frame),
+                    ("release", request.object_id),
+                    ("move", "Down1"),
+                    ("grip", request.object_id),
+                    ("move", "Up1"),
+                    ("move", request.place_frame),
+                    ("move", "Down1"),
+                    ("release", request.object_id),
+                    ("move", "Up1"),
+                ])
+
+            else:
+                self.get_logger().error(f"Unknown task type: {task}")
 
         future.add_done_callback(ontology_done)
 
         response.accepted = True
-        response.message = "Skill accepted. Checking ontology..."
+        response.message = "Task accepted. Checking ontology..."
         return response
 
-
-    def _dispatch(self, task, request):
-
-        if task == "move":
-            self._run_sequence([
-                ("move", request.target_frame)
-            ])
-
-        elif task == "grip":
-            self._run_sequence([
-                ("grip", request.object_id)
-            ])
-
-        elif task == "release":
-            self._run_sequence([
-                ("release", request.object_id)
-            ])
-
-        elif task == "pick":
-            self._run_sequence(self._pick_sequence(request))
-
-        elif task == "place":
-            self._run_sequence(self._place_sequence(request))
-
-        elif task in ["pickandplace"]:
-            self._run_sequence(
-                [("move", request.pick_frame)]
-                + self._pick_sequence(request)
-                + [("move", request.place_frame)]
-                + self._place_sequence(request)
-            )
-
-        else:
-            self.get_logger().error(f"Unknown task type: {task}")
-
-
-    def _pick_sequence(self, request):
-        return [
-            ("release", request.object_id),
-            ("move", "Down1"),
-            ("grip", request.object_id),
-            ("move", "Up1"),
-        ]
-
-    def _place_sequence(self, request):
-        return [
-            ("move", "Down1"),
-            ("release", request.object_id),
-            ("move", "Up1"),
-        ]
+    # =========================================================
+    # SEQUENTIAL EXECUTION ENGINE
+    # =========================================================
 
     def _run_sequence(self, steps):
 
         self.get_logger().info(f"Starting sequence with {len(steps)} steps.")
 
         def run_step(index):
-
             if index >= len(steps):
-                self.get_logger().info("Sequence completed.")
+                self.get_logger().info("Sequence completed successfully.")
                 return
 
             skill_name, target = steps[index]
+
             client = self._get_client(skill_name)
 
-            if not client.wait_for_server(timeout_sec=2.0):
-                self.get_logger().error(f"{skill_name} server not available")
+            if client is None:
+                self.get_logger().error(f"Unknown atomic skill: {skill_name}")
                 return
 
-            self.get_logger().info(
-                f"Step {index+1}/{len(steps)}: {skill_name}({target})"
-            )
+            if not client.wait_for_server(timeout_sec=2.0):
+                self.get_logger().error(f"Action server '{skill_name}' not available")
+                return
+
+            self.get_logger().info(f"Step {index+1}/{len(steps)}: {skill_name}({target})")
 
             goal = ExecuteAtomicSkill.Goal()
             goal.target_id = target
@@ -144,8 +151,8 @@ class TaskOrchestrator(Node):
             def goal_response_callback(fut):
                 goal_handle = fut.result()
 
-                if not goal_handle.accepted:
-                    self.get_logger().error(f"{skill_name} rejected")
+                if goal_handle is None or not goal_handle.accepted:
+                    self.get_logger().error(f"{skill_name} goal rejected")
                     return
 
                 result_future = goal_handle.get_result_async()
@@ -154,7 +161,9 @@ class TaskOrchestrator(Node):
                     result = res_fut.result().result
 
                     if not result.success:
-                        self.get_logger().error(f"{skill_name} failed")
+                        self.get_logger().error(
+                            f"{skill_name} failed: {result.message}"
+                        )
                         return
 
                     run_step(index + 1)
@@ -164,6 +173,10 @@ class TaskOrchestrator(Node):
             send_future.add_done_callback(goal_response_callback)
 
         run_step(0)
+
+    # =========================================================
+    # HELPER
+    # =========================================================
 
     def _get_client(self, skill_name):
         if skill_name == "move":
