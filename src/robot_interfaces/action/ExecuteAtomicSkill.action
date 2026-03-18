@@ -1,0 +1,11 @@
+# Goal
+string target_id          # z.B. "Workpiece1" oder "PoseA"
+string frame_id           # z.B. "world" oder "base_link"
+---
+# Result
+bool success
+string message
+---
+# Feedback
+string state              # z.B. "approaching", "grasping", "lifting"
+float32 progress          # 0.0 ... 1.0

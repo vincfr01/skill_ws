@@ -1,0 +1,12 @@
+# Goal
+string object_id
+string pick_frame
+string place_frame
+---
+# Result
+bool success
+string message
+---
+# Feedback
+string current_skill      # "pick" / "move" / "place"
+float32 progress

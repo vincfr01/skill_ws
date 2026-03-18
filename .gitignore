@@ -1,0 +1,19 @@
+# VS Code
+.vscode/
+
+# Build
+build/
+devel/
+install/
+
+# Logs
+*.log
+
+# Cache
+__pycache__/
+
+# OS
+.DS_Store.vscode/
+build/
+devel/
+install/

@@ -1,0 +1,5 @@
+string robot_id
+string task_type
+---
+bool can_execute
+string reason
