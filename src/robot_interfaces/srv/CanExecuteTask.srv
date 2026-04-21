@@ -1,5 +1,9 @@
+# Request
 string robot_id
 string task_type
 ---
+# Response
 bool can_execute
 string reason
+
+

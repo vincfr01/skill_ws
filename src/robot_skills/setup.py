@@ -31,9 +31,9 @@ setup(
         'grip_server = robot_skills.grip_server:main',
         'release_server = robot_skills.release_server:main',
         'move_server = robot_skills.move_server:main',
-        'pick_server = robot_skills.pick_server:main',        
-        'place_server = robot_skills.place_server:main',
-        'pick_and_place_server = robot_skills.pick_and_place_server:main',
+        #'pick_server = robot_skills.pick_server:main',        
+        #'place_server = robot_skills.place_server:main',
+        #'pick_and_place_server = robot_skills.pick_and_place_server:main',
     ],
     },
 )

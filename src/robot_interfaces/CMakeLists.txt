@@ -10,6 +10,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/StartSkill.srv"
   "action/ExecuteAtomicSkill.action"
   "action/ExecutePickAndPlace.action"
+  "action/StartSkill.action"
 )
 
 ament_export_dependencies(rosidl_default_runtime)

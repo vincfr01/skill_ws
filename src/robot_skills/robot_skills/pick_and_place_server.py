@@ -2,19 +2,17 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionServer, ActionClient
 
-from robot_interfaces.action import ExecuteAtomicSkill, ExecutePickAndPlace
+from robot_interfaces.action import ExecuteAtomicSkill, StartSkill
 
 
 class PickAndPlaceServer(Node):
     def __init__(self):
         super().__init__('pick_and_place_server')
 
-        # ✅ neuer Action-Typ für Composite
         self._action_server = ActionServer(
-            self, ExecutePickAndPlace, 'pick_and_place', self.execute_callback
+            self, StartSkill, 'pick_and_place', self.execute_callback
         )
 
-        # Atomic/Composite Clients (bestehende Skills)
         self.pick_client = ActionClient(self, ExecuteAtomicSkill, 'pick')
         self.move_client = ActionClient(self, ExecuteAtomicSkill, 'move')
         self.place_client = ActionClient(self, ExecuteAtomicSkill, 'place')
@@ -52,7 +50,7 @@ class PickAndPlaceServer(Node):
                 f"PickAndPlace: object={obj}, pick_frame={pick_frame}, place_frame={place_frame}, frame={frame_id}"
             )
 
-            feedback = ExecutePickAndPlace.Feedback()
+            feedback = StartSkill.Feedback()
 
             # 1) Move to pick_frame
             feedback.current_step = f"Move to {pick_frame}"
@@ -64,7 +62,7 @@ class PickAndPlaceServer(Node):
             ok, msg = await self._call_action(self.move_client, g, "MoveToPick")
             if not ok:
                 goal_handle.abort()
-                res = ExecutePickAndPlace.Result()
+                res = StartSkill.Result()
                 res.success = False
                 res.message = msg
                 return res
@@ -79,7 +77,7 @@ class PickAndPlaceServer(Node):
             ok, msg = await self._call_action(self.pick_client, g, "Pick")
             if not ok:
                 goal_handle.abort()
-                res = ExecutePickAndPlace.Result()
+                res = StartSkill.Result()
                 res.success = False
                 res.message = msg
                 return res
@@ -94,7 +92,7 @@ class PickAndPlaceServer(Node):
             ok, msg = await self._call_action(self.move_client, g, "MoveToPlace")
             if not ok:
                 goal_handle.abort()
-                res = ExecutePickAndPlace.Result()
+                res = StartSkill.Result()
                 res.success = False
                 res.message = msg
                 return res
@@ -109,13 +107,13 @@ class PickAndPlaceServer(Node):
             ok, msg = await self._call_action(self.place_client, g, "Place")
             if not ok:
                 goal_handle.abort()
-                res = ExecutePickAndPlace.Result()
+                res = StartSkill.Result()
                 res.success = False
                 res.message = msg
                 return res
 
             goal_handle.succeed()
-            res = ExecutePickAndPlace.Result()
+            res = StartSkill.Result()
             res.success = True
             res.message = f"PickAndPlace finished: move({pick_frame}) -> pick -> move({place_frame}) -> place"
             return res
@@ -123,7 +121,7 @@ class PickAndPlaceServer(Node):
         except Exception as e:
             self.get_logger().error(f"Exception in PickAndPlaceServer: {e}")
             goal_handle.abort()
-            res = ExecutePickAndPlace.Result()
+            res = StartSkill.Result()
             res.success = False
             res.message = f"Exception: {e}"
             return res

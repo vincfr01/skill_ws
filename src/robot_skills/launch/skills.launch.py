@@ -25,26 +25,4 @@ def generate_launch_description():
             name='move_server',
             output='screen'
         ),
-
-        Node(
-            package='robot_skills',
-            executable='pick_server',
-            name='pick_server',
-            output='screen'
-        ),
-
-        Node(
-            package='robot_skills',
-            executable='place_server',
-            name='place_server',
-            output='screen'
-        ),
-
-        Node(
-            package='robot_skills',
-            executable='pick_and_place_server',
-            name='pick_and_place_server',
-            output='screen'
-        ),
-
     ])
