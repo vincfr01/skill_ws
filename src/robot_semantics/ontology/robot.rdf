@@ -113,28 +113,6 @@
     
 
 
-    <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#CapableRobot -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#CapableRobot">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Robot"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#GraspingCapability"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MovingCapability"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-    </owl:Class>
-    
-
-
     <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Component -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Component"/>
@@ -195,26 +173,6 @@
     
 
 
-    <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#LineWelding -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#LineWelding">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#CompositeSkill"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Move"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Welding"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MobileRobot -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MobileRobot">
@@ -269,12 +227,6 @@
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Move"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Release"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -286,19 +238,19 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Grip"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Move"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Pick"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Place"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Release"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -309,12 +261,6 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Place">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#CompositeSkill"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Grip"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#requiresSkill"/>
@@ -379,28 +325,6 @@
     
 
 
-    <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#SuitableForPickAndPlace -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#SuitableForPickAndPlace">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Robot"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#GraspingCapability"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MovingCapability"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-    </owl:Class>
-    
-
-
     <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Tool -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Tool">
@@ -427,6 +351,14 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#WeldingCapability">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Capability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#WeldingHead -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#WeldingHead">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Tool"/>
     </owl:Class>
     
 
@@ -506,6 +438,14 @@
     
 
 
+    <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MAGWelding1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MAGWelding1">
+        <rdf:type rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#WeldingHead"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Motor1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Motor1">
@@ -575,6 +515,37 @@
         <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis5"/>
         <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis6"/>
         <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Gripper1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Robot2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Robot2">
+        <rdf:type rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#SixAxisRobot"/>
+        <untitled-ontology-22:hasCapability rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MoveCap1"/>
+        <untitled-ontology-22:hasCapability rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#WeldingCap1"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis1"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis2"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis3"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis4"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis5"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis6"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#MAGWelding1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Robot3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Robot3">
+        <rdf:type rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#SixAxisRobot"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis1"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis2"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis3"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis4"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis5"/>
+        <untitled-ontology-22:hasComponent rdf:resource="http://www.semanticweb.org/lunzm/ontologies/2026/1/untitled-ontology-22#Axis6"/>
     </owl:NamedIndividual>
     
 
