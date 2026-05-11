@@ -1,7 +1,6 @@
 # Goal
 string robot_id
 string task_type
-string object_id
 string target_frame
 string pick_frame
 string place_frame

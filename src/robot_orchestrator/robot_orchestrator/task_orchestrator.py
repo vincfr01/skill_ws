@@ -125,20 +125,20 @@ class TaskOrchestrator(Node):
 
         elif task == "grip":
             steps = [
-                ("grip", request.object_id)
+                ("grip", "")
             ]
 
         elif task == "release":
             steps = [
-                ("release", request.object_id)
+                ("release", "")
             ]
 
         elif task == "pick":
             steps = [
                 ("move", request.pick_frame),
-                ("release", request.object_id),
+                ("release", ""),
                 ("move", "Down1"),
-                ("grip", request.object_id),
+                ("grip", ""),
                 ("move", "Up1"),
             ]
 
@@ -146,20 +146,20 @@ class TaskOrchestrator(Node):
             steps = [
                 ("move", request.place_frame),
                 ("move", "Down1"),
-                ("release", request.object_id),
+                ("release", ""),
                 ("move", "Up1"),
             ]
 
         elif task in ["pickandplace"]:
             steps = [
                 ("move", request.pick_frame),
-                ("release", request.object_id),
+                ("release", ""),
                 ("move", "Down1"),
-                ("grip", request.object_id),
+                ("grip", ""),
                 ("move", "Up1"),
                 ("move", request.place_frame),
                 ("move", "Down1"),
-                ("release", request.object_id),
+                ("release", ""),
                 ("move", "Up1"),
             ]
 
