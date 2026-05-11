@@ -1,8 +1,0 @@
-string robot_id
-string task_type
-string object_id
-string pick_frame
-string place_frame
----
-bool accepted
-string message
