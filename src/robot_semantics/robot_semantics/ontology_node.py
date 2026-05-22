@@ -10,6 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 from robot_interfaces.srv import CanExecuteTask
 
 
+
 class OntologyReasoner(Node):
     def __init__(self):
         super().__init__("ontology_reasoner")
