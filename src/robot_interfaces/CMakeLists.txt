@@ -6,10 +6,8 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CanExecuteTask.srv"
-  #"srv/StartPickAndPlace.srv"
   "srv/StartSkill.srv"
   "action/ExecuteAtomicSkill.action"
-  #"action/ExecutePickAndPlace.action"
   "action/StartSkill.action"
 )
 

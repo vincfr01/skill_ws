@@ -1,3 +1,4 @@
+# interface for semantic requests (semantic layer = service-server)
 # Request
 string robot_id
 string task_type

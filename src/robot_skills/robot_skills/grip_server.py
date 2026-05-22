@@ -57,7 +57,7 @@ class GripSkillServer(Node):
                 return result
 
             # idle
-            self.send_feedback(goal_handle, "idle")
+            self.send_feedback(goal_handle, "running")
 
             result_future = gripper_goal_handle.get_result_async()
             _ = await result_future

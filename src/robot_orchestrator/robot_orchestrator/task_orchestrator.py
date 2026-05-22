@@ -59,7 +59,7 @@ class TaskOrchestrator(Node):
 
         result = StartSkill.Result()
 
-        # 1) Ontologie prüfen
+        # 1) check ontology
 
         self._publish_feedback(goal_handle, "Checking ontology")
 
@@ -114,7 +114,7 @@ class TaskOrchestrator(Node):
             result.message = f"Task not executable: {onto_result.reason}"
             return result
 
-        # 2) Task in Skill-Sequenz übersetzen
+        # 2) create skill-sequences
 
         task = request.task_type.lower().replace("_", "")
 
@@ -169,7 +169,7 @@ class TaskOrchestrator(Node):
             result.message = f"Unknown task type: {request.task_type}"
             return result
 
-        # 3) Sequenz ausführen
+        # 3) run sequence
 
         ok, msg = self._run_sequence(steps, goal_handle)
 

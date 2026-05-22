@@ -158,7 +158,7 @@ class MoveSkillServer(Node):
         if not goal_handle_traj.accepted:
             return False, "Rejected"
 
-        self.send_feedback(goal_handle, "idle")
+        self.send_feedback(goal_handle, "running")
 
         result_future = goal_handle_traj.get_result_async()
         result = await result_future

@@ -1,3 +1,4 @@
+# interface of the orchestrator (orchestration layer = action-server)
 # Goal
 string robot_id
 string task_type
