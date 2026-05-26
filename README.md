@@ -31,7 +31,7 @@ sudo apt install python3-vcstool
 
 For tutorials you will need to have a colcon workspace setup.
 
-mkdir -p ~/skill_ws/src
+mkdir -p ~/skill_ws
   
 4. Download Source Code of the project
 
