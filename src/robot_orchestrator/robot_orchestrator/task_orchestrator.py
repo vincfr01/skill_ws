@@ -17,7 +17,7 @@ class TaskOrchestrator(Node):
 
         self.cb_group = ReentrantCallbackGroup()
 
-        # Action Server
+        # Main action server for high-level skill requests
         self.action_server = ActionServer(
             self,
             StartSkill,
@@ -26,14 +26,14 @@ class TaskOrchestrator(Node):
             callback_group=self.cb_group
         )
 
-        # Ontologie Client
+        # Client to consult the ontology node for task feasibility
         self.onto_client = self.create_client(
             CanExecuteTask,
             'can_execute_task',
             callback_group=self.cb_group
         )
 
-        # Atomic Skill Clients
+        # Clients for specific atomic skills handled by separate nodes
         self.move_client = ActionClient(
             self, ExecuteAtomicSkill, 'move',
             callback_group=self.cb_group
@@ -59,7 +59,7 @@ class TaskOrchestrator(Node):
 
         result = StartSkill.Result()
 
-        # 1) check ontology
+        # 1) Validate execution using the ontology reasoning service
 
         self._publish_feedback(goal_handle, "Checking ontology")
 
@@ -114,7 +114,7 @@ class TaskOrchestrator(Node):
             result.message = f"Task not executable: {onto_result.reason}"
             return result
 
-        # 2) create skill-sequences
+        # 2) Map high-level task to a sequence of atomic skill steps
 
         task = request.task_type.lower().replace("_", "")
 
@@ -169,7 +169,7 @@ class TaskOrchestrator(Node):
             result.message = f"Unknown task type: {request.task_type}"
             return result
 
-        # 3) run sequence
+        # 3) Execute the generated sequence step-by-step
 
         ok, msg = self._run_sequence(steps, goal_handle)
 
@@ -186,11 +186,10 @@ class TaskOrchestrator(Node):
 
 
     def _run_sequence(self, steps, goal_handle):
-        """
-        Führt Atomic Skills streng sequenziell aus.
-        Nächster Skill startet erst, wenn der vorherige erfolgreich fertig ist.
-        """
-
+        
+        # Executes Atomic Skills strictly sequentially.
+        # Next skill starts only if the previous one finished successfully.
+        
         self.get_logger().info(f"Starting sequence with {len(steps)} steps.")
 
         for index, (skill_name, target) in enumerate(steps, start=1):
@@ -215,6 +214,7 @@ class TaskOrchestrator(Node):
             send_event = threading.Event()
             send_container = {"goal_handle": None, "exception": None}
 
+            # Pass sub-skill feedback back to the main requester
             def atomic_feedback_cb(feedback_msg):
                 state = feedback_msg.feedback.state
                 self._publish_feedback(goal_handle, f"{step_label} -> {state}")

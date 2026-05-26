@@ -20,11 +20,13 @@ class MoveSkillServer(Node):
     def __init__(self):
         super().__init__('move_skill_server')
 
+        # Kinematic configuration and frames
         self.base_frame = "world"
         self.ee_frame = "panda_link8"
         self.moveit_group = "panda_arm"
         self.delta_z = 0.10
 
+        # Action server for 'move' skills
         self._action_server = ActionServer(
             self,
             ExecuteAtomicSkill,
@@ -32,12 +34,14 @@ class MoveSkillServer(Node):
             self.execute_callback
         )
 
+        # Client to send trajectories to the controller
         self.traj_client = ActionClient(
             self,
             FollowJointTrajectory,
             '/panda_arm_controller/follow_joint_trajectory'
         )
 
+        # Hardcoded joint positions for specific named poses
         self.joint_names = [
             "panda_joint1", "panda_joint2", "panda_joint3",
             "panda_joint4", "panda_joint5", "panda_joint6", "panda_joint7"
@@ -54,6 +58,7 @@ class MoveSkillServer(Node):
         self.current_joint_positions = None
         self.current_joint_state = None
 
+        # Monitor current joint positions and TF transforms
         self.create_subscription(
             JointState,
             '/joint_states',
@@ -64,6 +69,7 @@ class MoveSkillServer(Node):
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
+        # Client for MoveIt's Cartesian path planning service
         self.cartesian_client = self.create_client(
             GetCartesianPath,
             '/compute_cartesian_path'
@@ -106,6 +112,7 @@ class MoveSkillServer(Node):
         return pose
 
     def compute_linear_cartesian_traj(self, target_id: str) -> JointTrajectory:
+        # Calculate a straight line move in Z direction (Up or Down)
 
         if self.current_joint_state is None:
             raise RuntimeError("No joint state")
@@ -118,6 +125,7 @@ class MoveSkillServer(Node):
         dz = self.delta_z if target_id == "Up1" else -self.delta_z
 
         target_pose = PoseStamped()
+        # Use current position and apply vertical offset
         target_pose.header.frame_id = current_pose.header.frame_id
         target_pose.pose = current_pose.pose
         target_pose.pose.position.z += dz
@@ -145,6 +153,7 @@ class MoveSkillServer(Node):
         return res.solution.joint_trajectory
 
     async def send_joint_trajectory(self, traj, goal_handle):
+        # Proxy function to forward a trajectory to the joint controller
 
         while not self.traj_client.wait_for_server(timeout_sec=1.0):
             pass
@@ -173,12 +182,12 @@ class MoveSkillServer(Node):
             target_id = goal_handle.request.target_id
             self.get_logger().info(f"Move: {target_id}")
 
-            # 👉 START
             self.send_feedback(goal_handle, "started")
 
             while self.current_joint_positions is None:
                 rclpy.spin_once(self, timeout_sec=0.1)
 
+            # Branch logic: handle Cartesian offsets vs named joint targets
             if target_id in ["Up1", "Down1"]:
                 traj = self.compute_linear_cartesian_traj(target_id)
 

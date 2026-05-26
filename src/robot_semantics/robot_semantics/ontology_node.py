@@ -9,13 +9,12 @@ from ament_index_python.packages import get_package_share_directory
 
 from robot_interfaces.srv import CanExecuteTask
 
-
-
+# ROS 2 Node that reasons over a robot ontology to validate task feasibility
 class OntologyReasoner(Node):
     def __init__(self):
         super().__init__("ontology_reasoner")
 
-
+        # Resolve the path to the RDF ontology file
         share_dir = get_package_share_directory("robot_semantics")
         ontology_path = os.path.join(share_dir, "ontology", "robot.rdf")
 
@@ -23,6 +22,7 @@ class OntologyReasoner(Node):
             self.get_logger().error(f"Ontology file not found: {ontology_path}")
             raise FileNotFoundError(ontology_path)
 
+        # Load the ontology into memory
         self.get_logger().info(f"Loading ontology: {ontology_path}")
         self.onto = get_ontology(f"file://{ontology_path}").load()
 
@@ -30,6 +30,7 @@ class OntologyReasoner(Node):
         try:
             from owlready2 import sync_reasoner_pellet
 
+            # Run the reasoner to infer implicit relationships and class hierarchies
             self.get_logger().info("Running reasoner (Pellet)...")
             sync_reasoner_pellet(
                 [self.onto],
@@ -43,6 +44,7 @@ class OntologyReasoner(Node):
                 f"Details: {e}"
             )
 
+        # Service to check if a specific robot can execute a skill
         self.srv = self.create_service(
             CanExecuteTask, "can_execute_task", self.can_execute_cb
         )
@@ -50,7 +52,7 @@ class OntologyReasoner(Node):
 
 
     def _class_axioms(self, cls) -> Iterable:
-        """Return asserted axioms we want to inspect: is_a + equivalent_to."""
+        # Extract parent classes and equivalent class definitions
         axioms = []
         if hasattr(cls, "is_a"):
             axioms.extend(list(cls.is_a))
@@ -59,13 +61,8 @@ class OntologyReasoner(Node):
         return axioms
 
     def _collect_some_fillers(self, expr, prop_name: str, out: Set) -> None:
-        """
-        Recursively collect fillers X from expressions of the form:
-          <prop_name> some X
-
-        Also descends into AND / intersection expressions that may contain such
-        restrictions (common when Protégé builds one combined axiom).
-        """
+        # Recursively find values in 'ObjectSomeValuesFrom' restrictions
+        # Handles nested logical intersections common in OWL
 
         if hasattr(expr, "property") and getattr(expr, "property") is not None:
             if expr.property.name == prop_name:
@@ -80,19 +77,14 @@ class OntologyReasoner(Node):
                 self._collect_some_fillers(subexpr, prop_name, out)
 
     def _some_restrictions(self, cls, prop_name: str) -> Set:
-        """Collect all fillers from '<prop_name> some X' restrictions on cls."""
+        # Helper to gather all 'Property SOME Class' fillers for a class
         fillers = set()
         for ax in self._class_axioms(cls):
             self._collect_some_fillers(ax, prop_name, fillers)
         return fillers
 
     def _collect_required_skills(self, skill_cls) -> Set:
-        """
-        Collect all skills required transitively by a skill class via:
-          requiresSkill some <Skill>
-
-        Includes the start skill itself in the returned set.
-        """
+        # Perform a transitive search for all sub-skills required by the requested skill
         visited = set()
         stack = [skill_cls]
 
@@ -110,25 +102,18 @@ class OntologyReasoner(Node):
         return visited
 
     def _collect_required_capabilities_for_skill(self, skill_cls) -> Tuple[Set, Set]:
-        """
-        For a given skill class, resolve all required (sub)skills, then collect
-        required capabilities across all of them via:
-          requiresCapability some <CapabilityClass>
-        """
+        # Resolve the full set of required capabilities across the entire skill hierarchy
         all_skills = self._collect_required_skills(skill_cls)
 
         required_caps = set()
         for s in all_skills:
+            # Union of all capabilities required by each skill in the chain
             required_caps |= self._some_restrictions(s, "requiresCapability")
 
         return required_caps, all_skills
 
     def _collect_robot_capability_classes(self, robot_individual) -> Set:
-        """
-        Collect the robot's capability classes based on:
-          robot_individual.hasCapability -> list of individuals
-          each capability individual has types in .is_a (classes)
-        """
+        # Get the classes (types) of capability individuals assigned to the robot
         robot_caps = set()
         if hasattr(robot_individual, "hasCapability"):
             for cap_ind in robot_individual.hasCapability:
@@ -141,6 +126,7 @@ class OntologyReasoner(Node):
         robot_id = request.robot_id
         skill_type = request.task_type
 
+        # Verify robot and skill exist in the ontology
         robot = getattr(self.onto, robot_id, None)
         if robot is None:
             response.can_execute = False
@@ -153,8 +139,10 @@ class OntologyReasoner(Node):
             response.reason = f"Skill class '{skill_type}' not found in ontology."
             return response
 
+        # Resolve what is needed
         required_caps, used_skills = self._collect_required_capabilities_for_skill(skill_cls)
 
+        # Skills without capability definitions are treated as unresolvable
         if not required_caps:
             response.can_execute = False
             response.reason = (
@@ -163,8 +151,10 @@ class OntologyReasoner(Node):
             )
             return response
 
+        # Fetch the robot's actual capabilities
         robot_caps = self._collect_robot_capability_classes(robot)
 
+        # Check for missing requirements
         missing = sorted([req.name for req in required_caps if req not in robot_caps])
 
         self.get_logger().info(

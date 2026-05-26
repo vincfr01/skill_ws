@@ -10,6 +10,7 @@ class ReleaseSkillServer(Node):
     def __init__(self):
         super().__init__('release_skill_server')
 
+        # Handle atomic release requests
         self._action_server = ActionServer(
             self,
             ExecuteAtomicSkill,
@@ -40,8 +41,9 @@ class ReleaseSkillServer(Node):
             while not self.gripper_client.wait_for_server(timeout_sec=1.0):
                 self.get_logger().info("Waiting for gripper action server...")
 
+            # Define goal: position 0.08 represents fully open
             goal = GripperCommand.Goal()
-            goal.command.position = 0.08   
+            goal.command.position = 0.08
             goal.command.max_effort = 40.0
 
             send_future = self.gripper_client.send_goal_async(goal)
